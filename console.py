@@ -118,8 +118,6 @@ class HBNBCommand(cmd.Cmd):
                     setattr(obj, argg[2], argg[3])
                 obj.save()
 
-         """execut default command
-         """
     def default(self, arg):
         argg = arg.split('.')
         if argg[0] in self.__classes:
