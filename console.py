@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 """Implementing the command line interpreter using Cmd
 arg = argument argg = list of split argument
 """
@@ -44,8 +45,8 @@ class HBNBCommand(cmd.Cmd):
             cls_instance.save()
             print(cls_instance.id)
 
-"""executes show command
-"""
+        """executes show command
+        """
     def do_show(self, arg):
         argg = arg.split()
 
@@ -61,8 +62,8 @@ class HBNBCommand(cmd.Cmd):
         else:
             print(storage.all()[f"{argg[0]}.{argg[1]}"])
 
-"""executes destroy command
-"""
+        """executes destroy command
+        """
     def do_destroy(self, arg):
         argg = arg.split()
 
@@ -79,8 +80,8 @@ class HBNBCommand(cmd.Cmd):
             del (storage.all()[f"{argg[0]}.{argg[1]}"])
         storage.save()
 
-"""print all class using all command
-"""
+        """print all class using all command
+        """
     def do_all(self,arg):
         argg = arg.split()
 
@@ -91,8 +92,8 @@ class HBNBCommand(cmd.Cmd):
         else:
             print([str(value)for key, value in storage.all().items()if key.startswith(argg[0])])
 
-"""executes update command
-"""
+        """executes update command
+        """
     def do_update(self, arg):
         argg = arg.split()
         if len(argg) == 0:
@@ -117,8 +118,8 @@ class HBNBCommand(cmd.Cmd):
                     setattr(obj, argg[2], argg[3])
                 obj.save()
 
-"""execut default command
-"""
+         """execut default command
+         """
     def default(self, arg):
         argg = arg.split('.')
         if argg[0] in self.__classes:
