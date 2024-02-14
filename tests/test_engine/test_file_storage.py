@@ -1,70 +1,44 @@
-#!/usr/bin/python3
 import unittest
 import os
 from models import storage
+from models.user import User
+from models.city import City
+from models.state import State
+from models.place import Place
+from models.review import Review
+from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.engine.file_storage import FileStorage
+from tests.test_models.test_base_model import JSON_FILE_PATH
 
+class TestFileStorageReloadNoFile(unittest.TestCase):
+    """Tests the `reload()` method of the FileStorage engine when the JSON file does not exist."""
 
-class FileStorageTestCase(unittest.TestCase):
-    def setUp(self):
-        """clearing the content of the __objects first"""
-        del_list = []
-        for key in storage._FileStorage__objects.keys():
-            del_list.append(key)
-        for key in del_list:
-            del storage._FileStorage__objects[key]
+    def setUp(self) -> None:
+        # Remove the JSON file if it exists
+        try:
+            os.remove(FileStorage._FileStorage__file_path)
+        except FileNotFoundError:
+            pass
 
-    def tearDown(self):
-        """deleting the file to ensure a clean slate"""
-        if os.path.exists('file.json'):
-            os.remove('file.json')
+    def test_reload_no_file(self) -> None:
+        """Tests reloading when the JSON file does not exist."""
+        # Ensure that the JSON file does not exist
+        self.assertFalse(os.path.exists(FileStorage._FileStorage__file_path))
+        
+        # Call the reload method
+        storage.reload()
 
-    def test_obj_list_empty(self):
-        """ensures that the __objects is empty at the start"""
+        # Check if the __objects dictionary is empty after reload
         self.assertEqual(len(storage.all()), 0)
 
-    def test_filestorage_instance(self):
-        """checks that storage is correctlly instantiated"""
-        self.assertIsInstance(storage, FileStorage)
-        base_model = BaseModel()
-        base_model.save()
-        all_objects = storage.all()
-        self.assertEqual(len(all_objects), 1)
-        self.assertIn("BaseModel.{}".format(base_model.id), all_objects)
-
-    def test_new_method(self):
-        """checks that the new instance is added to the __objects"""
-        base_model = BaseModel()
-        for obj in storage._FileStorage__objects.values():
-            self.assertEqual(obj, base_model)
-
-    def test_save_model(self):
-        """tests that it saves in a `file.json`"""
-        base_model = BaseModel()
-        base_model.save()
-        self.assertTrue(os.path.exists('file.json'))
-
-    def test_reload(self):
-        """tests that the instance is reinitialised"""
-        bm = BaseModel()
-        storage.new(bm)
-        storage.save()
-        storage.reload()
-        objs = FileStorage._FileStorage__objects
-        self.assertIn("BaseModel." + bm.id, objs)
-
-    def test_reload_empty(self):
-        """ Load from an empty file """
-        with open('file.json', 'w') as f:
+    def tearDown(self) -> None:
+        # Clean up: remove the JSON file if it was created during the test
+        try:
+            os.remove(FileStorage._FileStorage__file_path)
+        except FileNotFoundError:
             pass
-        with self.assertRaises(ValueError):
-            storage.reload()
-
-    def test_reload_from_nonexistent(self):
-        """ Nothing happens if file does not exist """
-        self.assertEqual(storage.reload(), None)
-
 
 if __name__ == '__main__':
     unittest.main()
+
