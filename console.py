@@ -30,7 +30,7 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def emptyline(self):
-        return True
+        pass
 
     def do_create(self, arg):
         argg = arg.split()
